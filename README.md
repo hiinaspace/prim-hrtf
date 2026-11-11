@@ -61,17 +61,21 @@ CPU per 480-frame callback, 7 moving sources, Ryzen 7 9800X3D: mean 16.8 µs, p9
 
 **S's listening verdict (2026-11-11, blind, headphones):**
 
-- 7 of 8 pairs were answered; pair 03 (45° left) was left blank.
-- Six pairs had no audible difference: 01 front, 02 45° right, 04 90° right, 06 behind,
-  and both four-voice scenes. Placement was the same and there was no preference.
+- Seven pairs had no audible difference: 01 front, 02 45° right, 03 45° left, 04 90°
+  right, 06 behind, and both four-voice scenes. Placement was the same and there was no
+  preference. Pair 03 was missed on the page; S gave it in chat as "can't tell apart".
 - Pair 05 (90° left; A = Godot, B = prim-hrtf) had a slight timbre difference. Neither
   side sounded wrong, and placement was the same with no preference. S thinks this clip
   may just have the spectral content that makes the difference noticeable.
 - The measured ±90° ILD gap did not show up as a placement difference. +90°, the larger
   measured gap, was not heard at all.
 
-Not checked: pair 03, angles passed through during head turns (±70°, ±75°, ±110°),
-and anything running on the Frame.
+S accepted the renderer's sound for R2a. He has also used Mumble's version with head
+tracking (OpenVR link plugin) and it sounded fine. A closer review of the evaluator is
+pending before the design is final.
+
+Not checked: prim-hrtf itself under head motion (±70°, ±75° and ±110° are passed
+through during turns), and anything running on the Frame.
 
 ## Steam Audio re-check (4.8.1; HEAD 480dd64 has no diff in these files)
 
