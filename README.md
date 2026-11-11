@@ -78,6 +78,9 @@ Two discontinuities are Steam Audio's own, and the port keeps them (`eval.rs`, t
   12.4 dB in one step. The Godot path does the same: from 89° to 91° left at 30° below,
   the far ear's 10–16 kHz band drops 9.8 dB in both, to within 0.1 dB.
 
+S chose to keep Steam's behaviour for now (2026-11-11). Blending across the gap
+remains an option.
+
 Everywhere else, the largest change per 0.25° step is 0.75 dB.
 
 CPU per 480-frame callback, 7 sources, Ryzen 7 9800X3D:
