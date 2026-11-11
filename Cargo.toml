@@ -1,0 +1,18 @@
+[package]
+name = "prim-hrtf"
+version = "0.1.0"
+edition = "2021"
+description = "Allocation-free binaural point-source renderer for Prim voice (baked HRTF, partitionless FFT convolution)"
+authors = ["Hiina <hiina@hiina.space>"]
+license = "Unlicense"
+publish = false
+
+[dependencies]
+realfft = "3"
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "prim-hrtf-bench"
+path = "src/bin/bench.rs"
