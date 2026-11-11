@@ -30,7 +30,7 @@ static GLOBAL: Counting = Counting;
 fn render_source_never_allocates() {
     let path = concat!(env!("CARGO_MANIFEST_DIR"), "/data/cipic_124.phrtf");
     let hrtf = Hrtf::from_bytes(&std::fs::read(path).unwrap()).unwrap();
-    let mut r = Renderer::new(hrtf, RendererConfig { max_sources: 7, ..Default::default() });
+    let mut r = Renderer::new(hrtf, RendererConfig { max_sources: 7, ..Default::default() }).unwrap();
     let b = r.block();
     let input: Vec<f32> = (0..b).map(|i| ((i * 7919) % 101) as f32 / 101.0 - 0.5).collect();
     let (mut l, mut rr) = (vec![0.0; b], vec![0.0; b]);

@@ -65,3 +65,30 @@ The recommended next round:
 4. Build a second blind packet against Godot. Add off-grid static seats (2.5°, 32.5°,
    60°, 72.5°, and 0° at elevation 2.8°) and rendered head-turn clips: a slow ±15° turn
    and a fast sweep.
+
+## Outcome (2026-11-11)
+
+S chose a faithful port of Steam Audio's interpolator rather than the aligned-IR scheme
+in findings 1+2. His reason: Steam's interpolator is proven in shipped games. What
+landed:
+
+- **1, 2, 7.**
+  - `.phrtf` v2 on Steam's interaural grid.
+  - Steam's bilinear weights.
+  - Blending of log magnitude and unwrapped phase into a 256-tap HRIR.
+  - Delays are not stored separately; the phase blend carries them.
+  - Steam's two discontinuities are kept: the exact pole, and the clamp in the
+    bottom gap. Both are confirmed against Godot.
+- **3.** Re-evaluation now happens past 0.1°, compared as squared chord length.
+- **4.** Non-finite directions and gains are guarded, with a test.
+- **5.** The gap contract is documented on `reset_source`. The idle path (skipping FFTs
+  after silent blocks) is not done; at 0.7 % worst case it isn't needed.
+- **6.** `RendererConfig::sample_rate` is checked, with a test.
+- **8.** The README is corrected. It reports per-ear figures and the raw level offset.
+- **9.** The CPU bench's moving case now re-evaluates every callback.
+
+The bench against Godot (run r2a-4, 40 seats, 12 of them off-grid) agrees at every seat:
+
+- ITD within 0.4 µs;
+- ILD within 0.65 dB;
+- per-ear band levels within 0.7 dB.

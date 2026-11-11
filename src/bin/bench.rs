@@ -30,7 +30,7 @@ fn render(args: &[String]) {
     let az: f32 = args[3].parse().unwrap();
     let distance: f32 = args[4].parse().unwrap();
     let el: f32 = args.get(5).map(|s| s.parse().unwrap()).unwrap_or(0.0);
-    let mut r = Renderer::new(hrtf, RendererConfig { max_sources: 1, ..Default::default() });
+    let mut r = Renderer::new(hrtf, RendererConfig { max_sources: 1, ..Default::default() }).unwrap();
     let b = r.block();
     let params = SourceParams {
         direction: direction_from_angles(az, el),
@@ -65,7 +65,7 @@ fn cpu(args: &[String]) {
     let sources: usize = args.get(1).map(|s| s.parse().unwrap()).unwrap_or(7);
     let seconds: f64 = args.get(2).map(|s| s.parse().unwrap()).unwrap_or(60.0);
     let moving = args.get(3).map(|s| s == "moving").unwrap_or(true);
-    let mut r = Renderer::new(hrtf, RendererConfig { max_sources: sources, ..Default::default() });
+    let mut r = Renderer::new(hrtf, RendererConfig { max_sources: sources, ..Default::default() }).unwrap();
     let b = r.block();
     let callbacks = (seconds * 48000.0 / b as f64) as usize;
     // Deterministic noise input per talker.
@@ -86,8 +86,9 @@ fn cpu(args: &[String]) {
     let mut times = Vec::with_capacity(callbacks);
     let mut sink = 0.0f32;
     for cb in 0..callbacks {
-        // Moving: listener yaws 90 deg/s (a brisk head turn), so every talker
-        // retargets every ~9 callbacks.
+        // Moving: listener yaws 90 deg/s (a brisk head turn), 0.9 deg per callback,
+        // past the retarget threshold, so every talker re-evaluates and crossfades
+        // every callback: the worst case.
         let yaw = if moving { cb as f32 * 0.9 } else { 0.0 };
         let t0 = Instant::now();
         l.fill(0.0);

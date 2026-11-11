@@ -67,8 +67,9 @@ func run():
 			streams.append(stream)
 			length = maxf(length, stream.get_length())
 			var az := deg_to_rad(float(v["azimuth"]))
+			var el := deg_to_rad(float(v.get("elevation", 0.0)))
 			var d := float(v["distance"])
-			heads[k].position = Vector3(sin(az) * d, 0.0, -cos(az) * d)
+			heads[k].position = Vector3(sin(az) * cos(el) * d, sin(el) * d, -cos(az) * cos(el) * d)
 			voices[k].volume_linear = float(v["gain"])
 		await create_timer(0.4).timeout
 		AudioServer.lock()

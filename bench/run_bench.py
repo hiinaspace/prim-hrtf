@@ -40,6 +40,11 @@ GAIN = 1.5                        # prim voice_gain(1.5 m) at defaults: 150 %, i
 MEASURE_AZ = [0, 45, 90, 135, 180, -135, -90, -45]
 # Through the interaural poles, where CIPIC has no measurement (last ring is 80 deg).
 SWEEP_AZ = [a * s for s in (1, -1) for a in (70, 75, 80, 85, 88, 92, 95, 100, 105, 110)]
+# Between measurements (the review's off-grid cases): (azimuth, elevation) in degrees.
+OFFGRID = [(2.5, 0), (-2.5, 0), (32.5, 0), (60, 0), (72.5, 0), (-72.5, 0), (0, 2.8),
+           (30, 15), (-120, -20), (150, 40),
+           # Either side of Steam's bottom-gap clamp (see README).
+           (-89, -30), (-91, -30)]
 SEATS = [0, 45, -45, 90, -90, 180]
 TABLES = {'table-front': [-90, -45, 45, 90], 'table-around': [0, 90, 180, -90]}
 STEAM_AUDIO = '/nix/store/0zlxvazq99j2pri42chb4094r6fj2rfx-godot-steam-audio-8f65c29-sdk-4.8.1'
@@ -100,10 +105,16 @@ def make_inputs(run):
     return meta
 
 
+def noise_name(az, el):
+    return f'noise_{az:g}_el{el:g}'
+
+
 def render_plan(inputs):
     speech = inputs['_speech']
     renders = [{'name': f'noise_{az}', 'voices': [{'input': 'noise', 'azimuth': az}]}
                for az in MEASURE_AZ + SWEEP_AZ]
+    renders += [{'name': noise_name(az, el), 'voices': [{'input': 'noise', 'azimuth': az, 'elevation': el}]}
+                for az, el in OFFGRID]
     for k, az in enumerate(SEATS):
         renders.append({'name': f'speech_{az}', 'voices': [{'input': speech[k % len(speech)], 'azimuth': az}]})
     for name, seats in TABLES.items():
@@ -136,7 +147,8 @@ def godot_capture(run, inputs, renders, godot, steam_audio):
     out.mkdir(parents=True, exist_ok=True)
     plan = {'max_voices': max(len(r['voices']) for r in renders), 'renders': [
         {'name': r['name'], 'voices': [{'wav': inputs[v['input']]['wav'], 'azimuth': v['azimuth'],
-                                        'distance': DISTANCE, 'gain': GAIN} for v in r['voices']]}
+                                        'elevation': v.get('elevation', 0), 'distance': DISTANCE,
+                                        'gain': GAIN} for v in r['voices']]}
         for r in renders]}
     (out / 'plan.json').write_text(json.dumps(plan, indent=2))
     sink = f'prim_hrtf_bench_{os.getpid()}'
@@ -151,7 +163,7 @@ def godot_capture(run, inputs, renders, godot, steam_audio):
                            env=env, stdout=log, stderr=subprocess.STDOUT, timeout=120)
             subprocess.run([str(godot), '--headless', '--audio-driver', 'PulseAudio', '--path', str(proj),
                             '--script', 'res://capture.gd'], env=env, stdout=log,
-                           stderr=subprocess.STDOUT, timeout=300, check=True)
+                           stderr=subprocess.STDOUT, timeout=900, check=True)
     finally:
         subprocess.run(['pactl', 'unload-module', module], check=True)
     if not (out / 'godot.json').exists():
@@ -175,7 +187,10 @@ def offline_renders(run, inputs, renders, kind):
             src = inputs[v['input']]['f32']
             if kind == 'prim':
                 cmd = [str(ROOT / 'target/release/prim-hrtf-bench'), 'render', str(hrtf), src, str(tmp),
-                       str(v['azimuth']), str(DISTANCE)]
+                       str(v['azimuth']), str(DISTANCE), str(v.get('elevation', 0))]
+            elif v.get('elevation', 0):
+                mix = None   # the Mumble harness takes azimuth only
+                break
             else:
                 cmd = [str(CACHE / 'mumble-harness/mumble-harness'), str(CACHE / 'cipic_124.sofa'),
                        src, str(tmp), str(v['azimuth']), str(GAIN)]
@@ -187,7 +202,8 @@ def offline_renders(run, inputs, renders, kind):
             else:
                 n = max(len(mix), len(x))
                 mix = np.pad(mix, ((0, n - len(mix)), (0, 0))) + np.pad(x, ((0, n - len(x)), (0, 0)))
-        mix.astype('<f4').tofile(dest)
+        if mix is not None:
+            mix.astype('<f4').tofile(dest)
 
 
 def load_stereo(path, rate):
@@ -263,10 +279,12 @@ def analyse(run, renders, godot_rate, paths):
     noise_in = np.fromfile(run / 'inputs/noise.f32', dtype='<f4').astype(np.float64)
     in_band = band_power(noise_in[:, None])[:, 0]
     results = {'azimuths': {}, 'alignment_lag_samples': lags}
-    for az in MEASURE_AZ + SWEEP_AZ:
+    seats = [(str(az), f'noise_{az}') for az in MEASURE_AZ + SWEEP_AZ]
+    seats += [(f'{az:g} el {el:g}', noise_name(az, el)) for az, el in OFFGRID]
+    for label, name in seats:
         row = {}
         for p in paths:
-            x = data[p].get(f'noise_{az}')
+            x = data[p].get(name)
             if x is None:
                 continue
             x = x[RATE // 4: -RATE // 4]   # skip onset/tail
@@ -279,6 +297,7 @@ def analyse(run, renders, godot_rate, paths):
                 'ild_bands_db': {k: round(v, 2) for k, v in ild_bands.items()},
                 'level_db': round(float(db(np.mean(x ** 2)) - db(np.mean(noise_in ** 2))), 2),
                 'band_gain_db': [round(float(v), 2) for v in db(bp.mean(1)) - db(in_band)],
+                'ear_band_gain_db': [[round(float(v), 2) for v in db(bp[:, e]) - db(in_band)] for e in (0, 1)],
             }
         if 'godot' in row:
             for p in row:
@@ -291,7 +310,11 @@ def analyse(run, renders, godot_rate, paths):
                     'itd_us': round(row[p]['itd_us'] - row['godot']['itd_us'], 1),
                     'ild_db': round(row[p]['ild_db'] - row['godot']['ild_db'], 2),
                 }
-        results['azimuths'][str(az)] = row
+                # Per ear, after removing one common level offset (so ILD errors stay in).
+                ears = np.array(row[p]['ear_band_gain_db']) - np.array(row['godot']['ear_band_gain_db'])
+                ears -= ears.mean()
+                row[p]['vs_godot']['ear_max_abs_db'] = [round(float(np.abs(e).max()), 2) for e in ears]
+        results['azimuths'][label] = row
     return results, data
 
 
