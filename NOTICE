@@ -1,0 +1,12 @@
+prim-hrtf
+Original code: Unlicense (see UNLICENSE).
+
+This product includes software ported from Steam Audio 4.8.1
+(https://github.com/ValveSoftware/steam-audio), Copyright 2017-2023 Valve Corporation,
+licensed under the Apache License, Version 2.0 (see LICENSE-APACHE). The ported
+functions are HRTFMap::interpolatedHRIRWeights and HRTFDatabase::interpolateHRIRs and
+unwrapPhase, rewritten in Rust (src/eval.rs, src/format.rs). Changed: language, data
+layout (baked .phrtf), float handling and FFT library.
+
+Contains HRTF measurements from the CIPIC HRTF database, University of California.
+See LICENSE.

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Derived from Steam Audio 4.8.1 (hrtf_map.cpp, hrtf_database.cpp), Copyright 2017-2023 Valve Corporation,
+// Apache-2.0. Modified: ported to Rust, baked data layout, realfft. See NOTICE and LICENSE-APACHE.
+
 //! The baked `.phrtf` format written by `tools/sofa2phrtf.py` (layout documented there),
 //! plus the per-measurement log-magnitude / unwrapped-phase spectra Steam Audio's
 //! interpolator works on, computed once at load.

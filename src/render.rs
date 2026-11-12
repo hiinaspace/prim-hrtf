@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 //! Per-source binaural rendering: overlap-save FFT convolution over a shared input
 //! history, re-evaluating the HRIR whenever the direction moves and crossfading
 //! between the old and new filter across one block.

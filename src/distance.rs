@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 //! Prim's received-voice distance law (project/net/avatar.gd `voice_falloff`,
 //! defaults from docs/TESTING.md: 150 % volume, full level within 3 m, smooth fade
 //! to silence at 15 m).

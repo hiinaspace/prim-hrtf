@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "Allocation-free binaural point-source renderer for Prim voice (baked HRTF, partitionless FFT convolution)"
 authors = ["Hiina <hiina@hiina.space>"]
-license = "Unlicense"
+license = "Unlicense AND Apache-2.0"
 publish = false
 
 [dependencies]

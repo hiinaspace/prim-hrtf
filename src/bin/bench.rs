@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 //! prim-hrtf-bench: fixed-seat renders and per-callback CPU timing.
 //!
 //!   prim-hrtf-bench render HRTF IN.f32 OUT.f32 AZIMUTH_DEG DISTANCE_M [ELEVATION_DEG]

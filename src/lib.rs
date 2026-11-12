@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 //! Binaural point-source renderer for Prim voice.
 //!
 //! HRIR evaluation is a port of Steam Audio 4.8.1's bilinear interpolation, the path

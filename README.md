@@ -143,8 +143,18 @@ convolution:
 - aarch64: `CMakeLists.txt:54-55` detects linux-arm64 and a toolchain file exists, but
   the 4.8.1 release ships no linux-arm64 library. A build was not attempted.
 
+## Licence and attribution
+
+Original code is the Unlicense, like Prim. `src/eval.rs` and parts of `src/format.rs`
+are ports of Steam Audio 4.8.1 (Copyright 2017-2023 Valve Corporation, Apache-2.0) and
+stay Apache-2.0. Third-party terms and notices are in [LICENSE](LICENSE) and
+[NOTICE](NOTICE).
+
 ## Data
 
-The speech is from LibriSpeech test-clean (CC BY 4.0): Panayotov, Chen, Povey and
-Khudanpur, with recordings from LibriVox. CIPIC HRTF database: UC Davis CIPIC
-Interface Laboratory.
+The HRTF is the CIPIC HRTF database, subject 124 (V. R. Algazi, R. O. Duda, D. M.
+Thompson and C. Avendano, "The CIPIC HRTF Database," IEEE WASPAA 2001, pp. 99-102;
+CIPIC Interface Laboratory, UC Davis), taken from Steam Audio's copy. Its terms are in
+[LICENSE](LICENSE). The speech is LibriSpeech test-clean (CC BY 4.0; Panayotov, Chen,
+Povey and Khudanpur, ICASSP 2015, recordings from LibriVox); it is downloaded at bench
+time, not stored in this repository.

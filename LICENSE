@@ -1,0 +1,108 @@
+# Licensing and attribution
+
+Original prim-hrtf code and documentation are released under the [Unlicense](UNLICENSE),
+the same as Prim. That grant covers only material the author owns. The files below
+carry other terms, and the SPDX expression in `Cargo.toml` is `Unlicense AND Apache-2.0`.
+
+| Material | Terms |
+| --- | --- |
+| `src/eval.rs`, and the phase-unwrapping and spectrum code in `src/format.rs` | Ports of Steam Audio 4.8.1 (`hrtf_map.cpp`, `hrtf_database.cpp`), Copyright 2017-2023 Valve Corporation, Apache-2.0. These files are derivative works and stay Apache-2.0; see [LICENSE-APACHE](LICENSE-APACHE) and [NOTICE](NOTICE). |
+| `data/cipic_124.phrtf` | CIPIC HRTF database, subject 124 (see below), baked and resampled by `tools/sofa2phrtf.py`. Its source file is Steam Audio's `core/data/hrtf/cipic_124.sofa`. |
+| Rust dependencies | `realfft` (MIT), `rustfft`, `num-complex`, `num-integer`, `num-traits`, `primal-check`, `strength_reduce`, `transpose`, `autocfg` (each MIT OR Apache-2.0). Checked with `cargo metadata` on 2026-11-11. |
+| `bench/mumble/` | `harness.cpp` is original. `build.sh` compiles Mumble's `HrtfSpatializer` and `3rdparty/fftconvolver` from a local Mumble checkout at bench time; none of that code is in this repository. Mumble is BSD-3-Clause (Copyright The Mumble Developers), fftconvolver is MIT (Copyright 2017 HiFi-LoFi), libmysofa is BSD-3-Clause (Copyright 2016-2017 Symonics GmbH, Christian Hoene). |
+| LibriSpeech test-clean | Not in this repository. `tools/fetch_speech.py` downloads it at bench time from openslr.org. CC BY 4.0, Panayotov, Chen, Povey and Khudanpur (ICASSP 2015), with recordings from LibriVox volunteers (public domain). |
+
+## CIPIC HRTF database
+
+`data/cipic_124.phrtf` is derived from the CIPIC HRTF database (subject 124), which the
+Steam Audio repository redistributes under Apache-2.0 and the Mumble tree shipped as
+`default.sofa`. The CIPIC terms, copied from the SOFA file's metadata:
+
+> The Regents of the University of California hereby grant users permission to
+> reproduce and/or use materials available therein for any purpose - educational,
+> research or commercial. However, each reproduction of any part of the materials must
+> include the copyright notice, if it is present. In addition, as a courtesy, if these
+> materials are used in published research, this use should be acknowledged in the
+> publication. If these materials are used in the development of commercial products,
+> the Regents of the University of California request that written acknowledgment of
+> such use be sent to: CIPIC - Center for Image Processing and Integrated Computing,
+> University of California, 1 Shields Avenue, Davis, CA 95616-8553.
+
+Citation: V. R. Algazi, R. O. Duda, D. M. Thompson and C. Avendano, "The CIPIC HRTF
+Database," Proc. 2001 IEEE Workshop on Applications of Signal Processing to Audio and
+Electroacoustics, pp. 99-102, Mohonk Mountain House, New Paltz, NY, Oct. 21-24, 2001.
+
+## Notices kept for ported or compared code
+
+This crate's renderer was first written as a port of Mumble's libmysofa-based
+evaluator (replaced; still in git history), so the notices of Mumble and libmysofa are
+kept here.
+
+### Mumble (BSD-3-Clause)
+
+    Copyright (C) The Mumble Developers
+    
+    All rights reserved.
+    
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    
+    - Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+    - Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+    - Neither the name of The Mumble Developers nor the names of its
+      contributors may be used to endorse or promote products derived from this
+      software without specific prior written permission.
+    
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FOUNDATION OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    
+    For questions and inquiries about Mumble's license,
+    please contact <license@mumble.info>.
+
+### libmysofa (BSD-3-Clause)
+
+    Copyright (c) 2016-2017, Symonics GmbH, Christian Hoene
+    All rights reserved.
+    
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+    
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer. 
+    
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.  
+        
+        (3)The name of the author may not be used to
+        endorse or promote products derived from this software without
+        specific prior written permission.
+    
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+    
+    

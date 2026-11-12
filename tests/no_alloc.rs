@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 //! The render call must not allocate: count allocations around a run with seven
 //! sources, gain changes and continuous retargeting (every source crossfading).
 

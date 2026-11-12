@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// Derived from Steam Audio 4.8.1 (hrtf_map.cpp, hrtf_database.cpp), Copyright 2017-2023 Valve Corporation,
+// Apache-2.0. Modified: ported to Rust, baked data layout, realfft. See NOTICE and LICENSE-APACHE.
+
 //! HRIR evaluation: a port of Steam Audio 4.8.1's bilinear HRTF interpolation, the path
 //! Prim's Godot voice used before this crate (`IPL_HRTFINTERPOLATION_BILINEAR`):
 //!
